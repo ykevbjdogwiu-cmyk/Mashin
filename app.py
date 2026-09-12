@@ -5,7 +5,7 @@ import google.generativeai as genai
 st.set_page_config(page_title="Masheni Box Studio", layout="centered")
 
 st.title("🛍️ استوديو تعديل صور المنتجات الذكي")
-st.write("ارفع صورة المنتج، وسيقوم النظام بتنسيقها وإزالة التجاعيد وإضافة الإكسسوارات الفاخرة تلقائياً.")
+st.write("ارفع صورة المنتج، وسيقوم الذكاء الاصطناعي بإعادة صياغتها وتنسيقها كصورة احترافية.")
 
 api_key = st.text_input("أدخل مفتاح Google Gemini API Key:", type="password")
 
@@ -26,18 +26,30 @@ if uploaded_file is not None:
         "High-end fashion catalog style, photorealistic, hyper-detailed."
     )
     
-    prompt = st.text_area("البرومبت المستخدم (ثابت أو قابل للتعديل):", value=default_prompt, height=150)
+    prompt = st.text_area("تعليمات التنسيق (البرومبت):", value=default_prompt, height=150)
     
-    if st.button("🚀 ابدأ التعديل والتوليد"):
+    if st.button("🚀 ابدأ معالجة وتوليد الصورة الاحترافية"):
         if not api_key:
             st.error("الرجاء إدخال مفتاح الـ API أولاً.")
         else:
-            with st.spinner("جاري معالجة الصورة عبر الذكاء الاصطناعي... يرجى الانتظار"):
+            with st.spinner("جاري معالجة الصورة وإعادة تنسيقها... يرجى الانتظار قليلاً"):
                 try:
                     genai.configure(api_key=api_key)
+                    # استخدام النموذج المناسب للتعامل مع الصور والمهام البصرية
                     model = genai.GenerativeModel('gemini-2.5-flash')
+                    
+                    # إرسال الصورة والطلب
                     response = model.generate_content([prompt, image])
-                    st.success("تم التعديل بنجاح!")
-                    st.write(response.text)
+                    
+                    st.success("تمت المعالجة بنجاح!")
+                    
+                    # محاولة عرض النتيجة إذا تضمنت صورة أو عرض النص الإرشادي بدقة
+                    try:
+                        # في حال عاد النموذج بصورة أو بيانات بصرية
+                        st.image(response.text, caption="الصورة الناتجة المنسقة")
+                    except:
+                        # عرض النص والنتيجة التي أنتجها النموذج لتوضيح الخطوة التالية
+                        st.markdown(response.text)
+                        
                 except Exception as e:
                     st.error(f"حدث خطأ أثناء المعالجة: {e}")
