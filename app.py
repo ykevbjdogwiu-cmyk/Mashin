@@ -36,7 +36,7 @@ if uploaded_file is not None:
                 try:
                     genai.configure(api_key=api_key)
                     # استخدام النموذج المناسب للتعامل مع الصور والمهام البصرية
-                    model = genai.GenerativeModel('gemini-2.5-flash')
+                    model = genai.GenerativeModel('gemini-3.6-flash')
                     
                     # إرسال الصورة والطلب
                     response = model.generate_content([prompt, image])
