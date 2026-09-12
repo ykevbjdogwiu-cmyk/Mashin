@@ -5,9 +5,10 @@ import google.generativeai as genai
 st.set_page_config(page_title="Masheni Box Studio", layout="centered")
 
 st.title("🛍️ استوديو تعديل صور المنتجات الذكي")
-st.write("ارفع صورة المنتج، وسيقوم الذكاء الاصطناعي بإعادة صياغتها وتنسيقها كصورة احترافية.")
+st.write("ارفع صورة المنتج، وسيقوم الذكاء الاصطناعي بمعالجتها وتنسيقها بصرياً.")
 
-api_key = st.text_input("أدخل مفتاح Google Gemini API Key:", type="password")
+# إدخال المفتاح مباشرة أو تركه للمنصة
+api_key = "AIzaSyDqq2enocDxR8NSUtJ2oCC-oiWRKVnxeL4"
 
 uploaded_file = st.file_uploader("اختر صورة المنتج (ملابس، فستان، قميص...)", type=["jpg", "jpeg", "png"])
 
@@ -30,26 +31,23 @@ if uploaded_file is not None:
     
     if st.button("🚀 ابدأ معالجة وتوليد الصورة الاحترافية"):
         if not api_key:
-            st.error("الرجاء إدخال مفتاح الـ API أولاً.")
+            st.error("الرجاء التأكد من مفتاح الـ API.")
         else:
-            with st.spinner("جاري معالجة الصورة وإعادة تنسيقها... يرجى الانتظار قليلاً"):
+            with st.spinner("جاري معالجة الصورة عبر النموذج الذكي... يرجى الانتظار قليلاً"):
                 try:
                     genai.configure(api_key=api_key)
-                    # استخدام النموذج المناسب للتعامل مع الصور والمهام البصرية
+                    # استخدام نموذج gemini-3.6-flash الذي نجح الاتصال به قبل قليل
                     model = genai.GenerativeModel('gemini-3.6-flash')
                     
-                    # إرسال الصورة والطلب
                     response = model.generate_content([prompt, image])
                     
                     st.success("تمت المعالجة بنجاح!")
                     
-                    # محاولة عرض النتيجة إذا تضمنت صورة أو عرض النص الإرشادي بدقة
-                    try:
-                        # في حال عاد النموذج بصورة أو بيانات بصرية
-                        st.image(response.text, caption="الصورة الناتجة المنسقة")
-                    except:
-                        # عرض النص والنتيجة التي أنتجها النموذج لتوضيح الخطوة التالية
+                    # محاولة استعراض الرد البصري أو النصي بالتنسيق الأنسب
+                    if hasattr(response, 'text'):
                         st.markdown(response.text)
+                    else:
+                        st.warning("لم يتم إرجاع محتوى نصي مباشر، يجدر التحقق من الاستجابة.")
                         
                 except Exception as e:
                     st.error(f"حدث خطأ أثناء المعالجة: {e}")
