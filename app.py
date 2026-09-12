@@ -33,7 +33,7 @@ if uploaded_file is not None:
         if not api_key:
             st.error("الرجاء إضافة مفتاح الـ API في إعدادات Secrets الخاصة بـ Streamlit أولاً.")
         else:
-            with st.spinner("جاري دمج وتنسيق قطعة الملابس داخل الاستوديو الاحترافي... يرجى الانتظار"):
+            with st.spinner("جاري تحليل وتنسيق قطعة الملابس داخل الاستوديو الاحترافي... يرجى الانتظار قليلاً"):
                 try:
                     genai.configure(api_key=api_key)
                     
@@ -43,7 +43,7 @@ if uploaded_file is not None:
                         "Analyze this clothing item precisely (color, exact fabric, straps, lace, or details). "
                         "Write a professional e-commerce flat lay photography prompt featuring this exact item beautifully and neatly arranged "
                         "in the center on a luxurious soft white textured linen bedsheet background. "
-                        "Surrounding items must include: a bunch of delicate white baby's breath flowers, a glass perfume bottle (like Chanel), "
+                        "Surrounding items must include: a bunch of delicate white baby's breath flowers, a glass perfume bottle, "
                         "a beige satin scrunchie in the top-right, and a small gold dish with jewelry on the right side. "
                         "Bright natural lighting, high-end commercial fashion catalog style, photorealistic, 8k.",
                         image
@@ -51,14 +51,14 @@ if uploaded_file is not None:
                     
                     image_prompt = analysis_response.text.strip()
                     
-                    # الخطوة 2: إرسال الطلب لمحرك الرسم لتوليد الصورة المطابقة للنمط الفاخر
+                    # الخطوة 2: إرسال الطلب لمحرك الرسم برابط مدعوم ومهلة زمنية أطول (60 ثانية)
                     encoded_prompt = urllib.parse.quote(image_prompt)
-                    ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1000&height=1000&nologo=true"
+                    ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1000&height=1000&nologo=true&seed=42"
                     
-                    headers = {'User-Agent': 'Mozilla/5.0'}
-                    img_response = requests.get(ai_image_url, headers=headers, timeout=35)
+                    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+                    img_response = requests.get(ai_image_url, headers=headers, timeout=60)
                     
-                    if img_response.status_code == 200 and len(img_response.content) > 1000:
+                    if img_response.status_code == 200 and len(img_response.content) > 500:
                         generated_img = Image.open(BytesIO(img_response.content))
                         
                         st.success("تم تنسيق وتوليد الصورة الاحترافية بنجاح!")
@@ -76,7 +76,7 @@ if uploaded_file is not None:
                             mime="image/jpeg"
                         )
                     else:
-                        st.error("عذراً، حدث تأخير في الاستجابة من خادم الرسم. يرجى المحاولة مرة أخرى بالنقر على الزر.")
+                        st.warning("خادم الرسم استغرق وقتاً طويلاً. يرجى النقر على زر 'تحويل وتنسيق الصورة' مرة أخرى للمحاولة.")
                         
                 except Exception as e:
                     st.error(f"حدث خطأ أثناء المعالجة: {e}")
