@@ -16,8 +16,11 @@ st.markdown("""
 st.title("🛍️ Masheni Box Studio - استوديو تنسيق المنتجات")
 st.write("ارفع صورة ملابسك، وسيقوم الذكاء الاصطناعي بوضعها داخل خلفية الاستوديو الاحترافية (Flat Lay) تماماً مثل الصور الإعلانية الفاخرة.")
 
-# مفتاح الـ API الخاص بك
-api_key = "AIzaSyDqq2enocDxR8NSUtJ2oCC-oiWRKVnxeL4"
+# قراءة مفتاح الـ API بأمان تام من إعدادات Streamlit Secrets
+try:
+    api_key = st.secrets["GOOGLE_API_KEY"]
+except Exception:
+    api_key = None
 
 # رفع صورة المنتج
 uploaded_file = st.file_uploader("اختر صورة قطعة الملابس...", type=["jpg", "jpeg", "png"])
@@ -28,7 +31,7 @@ if uploaded_file is not None:
     
     if st.button("🚀 تحويل وتنسيق الصورة بنفس النمط الاحترافي"):
         if not api_key:
-            st.error("الرجاء التأكد من مفتاح الـ API.")
+            st.error("الرجاء إضافة مفتاح الـ API في إعدادات Secrets الخاصة بـ Streamlit أولاً.")
         else:
             with st.spinner("جاري دمج وتنسيق قطعة الملابس داخل الاستوديو الاحترافي... يرجى الانتظار"):
                 try:
